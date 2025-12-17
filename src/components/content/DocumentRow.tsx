@@ -54,7 +54,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
   };
 
   return (
-    <div className={`border-b border-[rgba(118,118,118,0.16)] flex gap-3 md:gap-6 h-auto md:h-16 items-start md:items-center px-3 md:px-4 py-3 md:py-0 shrink-0 w-full max-w-full min-w-0 cursor-pointer transition-colors duration-150 hover:bg-gray-50 ${className}`}>
+    <div className={`border-b border-[rgba(118,118,118,0.16)] flex gap-3 md:gap-6 h-auto md:h-16 items-start md:items-center px-3 md:px-4 py-3 md:py-0 shrink-0 w-full max-w-full min-w-0 cursor-pointer transition-colors duration-150 hover:bg-[rgba(118,118,118,0.08)] ${className}`}>
       {/* Icon - fixed width */}
       <div className="w-6 shrink-0 flex-shrink-0">
         <DocumentPortraitIcon className="shrink-0" />

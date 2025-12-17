@@ -72,13 +72,13 @@ export default function UserMenu({ isOpen, onClose, anchorRef, avatarText }: Use
         <div className="py-1">
           <button
             onClick={onClose}
-            className="w-full text-left text-sm text-gray-800 py-1.5 hover:bg-gray-50 px-4 transition-colors"
+            className="w-full text-left text-sm text-gray-800 py-2 hover:bg-[rgba(118,118,118,0.08)] px-4 transition-colors"
           >
             Account settings
           </button>
           <button
             onClick={onClose}
-            className="w-full text-left text-sm text-gray-800 py-1.5 hover:bg-gray-50 px-4 transition-colors"
+            className="w-full text-left text-sm text-gray-800 py-2 hover:bg-[rgba(118,118,118,0.08)] px-4 transition-colors"
           >
             Notifications
           </button>
@@ -95,13 +95,13 @@ export default function UserMenu({ isOpen, onClose, anchorRef, avatarText }: Use
           </div>
           <button
             onClick={onClose}
-            className="w-full text-left text-sm text-gray-800 py-1.5 hover:bg-gray-50 px-4 transition-colors"
+            className="w-full text-left text-sm text-gray-800 py-2 hover:bg-[rgba(118,118,118,0.08)] px-4 transition-colors"
           >
             Workspace settings
           </button>
           <button
             onClick={onClose}
-            className="w-full text-left text-sm text-gray-800 py-1.5 hover:bg-gray-50 px-4 transition-colors"
+            className="w-full text-left text-sm text-gray-800 py-2 hover:bg-[rgba(118,118,118,0.08)] px-4 transition-colors"
           >
             Integrations
           </button>
@@ -113,7 +113,7 @@ export default function UserMenu({ isOpen, onClose, anchorRef, avatarText }: Use
         <div className="py-1">
           <button
             onClick={onClose}
-            className="w-full flex items-center justify-between text-sm text-gray-800 py-1.5 hover:bg-gray-50 px-4 transition-colors"
+            className="w-full flex items-center justify-between text-sm text-gray-800 py-2 hover:bg-[rgba(118,118,118,0.08)] px-4 transition-colors"
           >
             <span>Sign out</span>
             <SignOutIcon />
