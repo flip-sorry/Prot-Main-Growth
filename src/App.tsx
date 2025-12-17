@@ -7,6 +7,7 @@ import Tabs from './components/content/Tabs';
 import DocumentTable from './components/content/DocumentTable';
 import { documentsToday, documentsLastWeek, allDocuments } from './data/documents';
 import type { Document } from './types';
+import { StatusWidthProvider } from './contexts/StatusWidthContext';
 
 function App() {
   const [activeTab, setActiveTab] = useState('action-required');
@@ -107,7 +108,9 @@ function App() {
           </div>
         </div>
         <div className="flex flex-col gap-6 md:gap-8 px-[60px] pb-6 md:pb-8 pt-0 w-full max-w-full min-w-0">
-          <DocumentTable groups={documentGroups} />
+          <StatusWidthProvider>
+            <DocumentTable groups={documentGroups} />
+          </StatusWidthProvider>
         </div>
       </div>
     </MainLayout>

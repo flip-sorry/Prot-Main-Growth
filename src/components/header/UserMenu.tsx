@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { SignOutIcon } from '../ui/icons';
+import Avatar from '../ui/Avatar';
 
 interface UserMenuProps {
   isOpen: boolean;
   onClose: () => void;
   anchorRef: React.RefObject<HTMLButtonElement>;
+  avatarText: string;
 }
 
-export default function UserMenu({ isOpen, onClose, anchorRef }: UserMenuProps) {
+export default function UserMenu({ isOpen, onClose, anchorRef, avatarText }: UserMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,10 +55,7 @@ export default function UserMenu({ isOpen, onClose, anchorRef }: UserMenuProps) 
             MY ACCOUNT
           </div>
           <div className="flex gap-3 items-center mb-2">
-            <div className="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center shrink-0 overflow-hidden">
-              {/* Placeholder for user avatar image - would be an img tag in real implementation */}
-              <div className="w-full h-full bg-gradient-to-br from-blue-200 to-blue-300" />
-            </div>
+            <Avatar text={avatarText} className="w-10 h-10 text-xs shrink-0" />
             <div className="flex flex-col min-w-0">
               <div className="text-sm font-semibold text-gray-800 truncate">
                 Iurii Aliavdin
