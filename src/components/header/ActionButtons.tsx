@@ -29,13 +29,13 @@ export default function ActionButtons() {
   return (
     <>
       <div className="flex gap-2 items-center shrink-0">
-        <Button variant="icon">
+        <Button variant="icon" size="L">
           <DocumentImageIcon />
         </Button>
-        <Button variant="icon">
+        <Button variant="icon" size="L">
           <RecentDocumentsIcon />
         </Button>
-        <Button variant="icon">
+        <Button variant="icon" size="L">
           <HelpQuestionIcon />
         </Button>
         <Avatar text={userInitials} onClick={handleAvatarClick} ref={avatarRef} />

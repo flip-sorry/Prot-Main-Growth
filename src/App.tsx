@@ -13,6 +13,10 @@ function App() {
   const [activeTab, setActiveTab] = useState('action-required');
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Get first name from full name in profile
+  const fullUserName = 'Iurii Aliavdin';
+  const firstName = fullUserName.split(' ')[0];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,7 +103,7 @@ function App() {
               : 'gap-6 md:gap-8 pt-6 md:pt-8'
           }`}>
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center shrink-0 w-full">
-              <WelcomeSection userName="Aaron" />
+              <WelcomeSection userName={firstName} />
               <SplitButton />
             </div>
             <div className="w-full max-w-full min-w-0">

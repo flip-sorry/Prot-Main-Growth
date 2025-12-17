@@ -11,9 +11,9 @@ const LabelStatus = forwardRef<HTMLDivElement, LabelStatusProps>(
     const isToApprove = type === 'To approve';
     
     return (
-      <div ref={ref} className={`${className} inline-block`}>
+      <div ref={ref} className={`${className} inline-flex items-center`}>
         <div
-          className={`h-4 inline-flex items-center px-1 rounded ${
+          className={`h-4 inline-flex items-center justify-center px-1 rounded ${
             isToApprove
               ? 'bg-[rgba(255,144,69,0.08)]'
               : 'bg-[#f4f4f4]'

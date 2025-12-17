@@ -13,7 +13,7 @@ export default function Tab({ label, count, active = false, onClick, className =
       onClick={onClick}
     >
       <div
-        className={`flex flex-col gap-1 isolate items-start leading-[1.2] overflow-hidden pl-2 md:pl-3 pr-3 md:pr-5 py-2 md:py-3 shrink-0 text-xs md:text-sm w-full transition-colors duration-150 ${
+        className={`flex flex-col gap-1 isolate items-start leading-tight overflow-hidden px-4 py-2 md:py-3 shrink-0 text-xs md:text-sm w-full transition-colors duration-150 ${
           active 
             ? 'bg-background rounded-tl-lg rounded-tr-lg' 
             : 'bg-[rgba(255,255,255,0.08)] rounded-tl-lg rounded-tr-lg'

@@ -54,7 +54,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
   };
 
   return (
-    <div className={`border-b border-[rgba(118,118,118,0.16)] flex gap-3 md:gap-6 h-auto md:h-16 items-start md:items-center px-3 md:px-4 py-3 md:py-0 shrink-0 w-full max-w-full min-w-0 cursor-pointer transition-colors duration-150 hover:bg-[rgba(118,118,118,0.08)] ${className}`}>
+    <div className={`border-b border-[rgba(118,118,118,0.16)] flex gap-3 md:gap-6 h-auto md:h-16 items-center px-3 md:px-4 py-3 md:py-0 shrink-0 w-full max-w-full min-w-0 cursor-pointer transition-colors duration-150 hover:bg-[rgba(118,118,118,0.08)] ${className}`}>
       {/* Icon - fixed width */}
       <div className="w-6 shrink-0 flex-shrink-0">
         <DocumentPortraitIcon className="shrink-0" />
@@ -81,7 +81,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
       
       {/* Status column - width based on longest status label on page */}
       <div 
-        className="shrink-0 flex items-center justify-start"
+        className="shrink-0 flex items-center justify-start h-fit self-center"
         style={{ width: `${maxStatusWidth}px`, minWidth: `${maxStatusWidth}px` }}
       >
         <LabelStatus ref={statusRef} type={document.status} />
@@ -97,7 +97,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
       )}
       
       {/* Avatar + Date column - max 140px, can shrink on smaller screens */}
-      <div className="w-[140px] min-w-[100px] shrink flex gap-2 items-center">
+      <div className="max-w-[140px] min-w-0 shrink flex gap-2 items-center">
         <Avatar text={document.avatarText} />
         <p className="flex-1 text-[13px] font-normal leading-4 min-w-0 text-text-dark shrink-0 hidden md:block truncate" style={{ fontFamily: "'Graphik LC Web', sans-serif" }}>
           {document.date}
@@ -105,7 +105,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
       </div>
       
       {/* More options button - fixed width */}
-      <div className="w-10 shrink-0 flex-shrink-0">
+      <div className="w-8 shrink-0 flex-shrink-0">
         <Button variant="icon">
           <MoreOptionsIcon />
         </Button>

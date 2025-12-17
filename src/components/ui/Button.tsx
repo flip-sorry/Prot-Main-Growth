@@ -5,14 +5,16 @@ interface ButtonProps {
   className?: string;
   onClick?: () => void;
   variant?: 'default' | 'icon';
+  size?: 'M' | 'L';
 }
 
-export default function Button({ children, className = '', onClick, variant = 'default' }: ButtonProps) {
+export default function Button({ children, className = '', onClick, variant = 'default', size = 'M' }: ButtonProps) {
   if (variant === 'icon') {
+    const sizeClasses = size === 'L' ? 'w-10 h-10' : 'w-8 h-8';
     return (
       <button
         onClick={onClick}
-        className={`w-10 h-10 flex items-center justify-center hover:bg-[rgba(118,118,118,0.08)] rounded transition-colors duration-150 ${className}`}
+        className={`${sizeClasses} flex items-center justify-center hover:bg-[rgba(118,118,118,0.08)] rounded transition-colors duration-150 ${className}`}
       >
         {children}
       </button>
