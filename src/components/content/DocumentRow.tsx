@@ -75,7 +75,7 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
           <p className="text-[13px] font-normal text-text-lighter leading-4 shrink-0" style={{ fontFamily: "'Graphik LC Web', sans-serif" }}>
             {document.participants.join(', ')}
           </p>
-          <ChevronDownIcon className="shrink-0 ml-1" size={16} />
+          <ChevronDownIcon className="shrink-0 ml-1" />
         </div>
       </div>
       
