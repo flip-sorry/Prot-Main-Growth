@@ -1,13 +1,28 @@
+import { forwardRef } from 'react';
+
 interface AvatarProps {
   text: string;
   className?: string;
+  onClick?: () => void;
 }
 
-export default function Avatar({ text, className = '' }: AvatarProps) {
-  return (
-    <div className={`w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700 ${className}`}>
-      {text}
-    </div>
-  );
-}
+const Avatar = forwardRef<HTMLButtonElement, AvatarProps>(
+  ({ text, className = '', onClick }, ref) => {
+    return (
+      <button
+        ref={ref}
+        onClick={onClick}
+        className={`w-10 h-10 flex items-center justify-center hover:bg-[rgba(118,118,118,0.08)] rounded transition-colors duration-150 ${className}`}
+      >
+        <div className="w-6 h-6 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-[9px] font-semibold text-[#4262E0]">
+          {text}
+        </div>
+      </button>
+    );
+  }
+);
+
+Avatar.displayName = 'Avatar';
+
+export default Avatar;
 

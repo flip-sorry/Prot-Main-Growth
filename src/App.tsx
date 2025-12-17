@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import Header from './components/header/Header';
 import WelcomeSection from './components/content/WelcomeSection';
 import SplitButton from './components/content/SplitButton';
 import Tabs from './components/content/Tabs';
 import DocumentTable from './components/content/DocumentTable';
-import { documentsToday, documentsLastWeek } from './data/documents';
+import { documentsToday, documentsLastWeek, allDocuments } from './data/documents';
+import type { Document } from './types';
 
 function App() {
-  const [, setActiveTab] = useState('action-required');
+  const [activeTab, setActiveTab] = useState('action-required');
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -27,18 +28,60 @@ function App() {
     }
   }, []);
 
-  const tabs = [
-    { id: 'ai-recap', label: 'AI Recap', count: 5 },
-    { id: 'drafts', label: 'Drafts', count: 5 },
-    { id: 'action-required', label: 'Action required', count: 6, active: true },
-    { id: 'waiting-for-others', label: 'Waiting for others', count: 4 },
-    { id: 'finalized', label: 'Finalized', count: 7 },
-    { id: 'suggested-edits', label: 'Suggested edits', count: 0 },
-  ];
+  // Function to filter documents based on tab
+  const getDocumentsForTab = (tabId: string): Document[] => {
+    switch (tabId) {
+      case 'drafts':
+        return allDocuments.filter(doc => doc.status === 'Draft');
+      case 'action-required':
+        return allDocuments.filter(doc => doc.status === 'To approve' || doc.status === 'To sign');
+      case 'waiting-for-others':
+        return allDocuments.filter(doc => doc.status === 'Awaiting approval' || doc.status === 'Waiting for payment');
+      case 'finalized':
+        return allDocuments.filter(doc => doc.status === 'Completed' || doc.status === 'Paid');
+      default:
+        return [];
+    }
+  };
 
-  const documentGroups = [
-    { title: 'Today', documents: documentsToday },
-    { title: 'Last week', documents: documentsLastWeek },
+  // Filter documents based on active tab
+  const filteredDocuments = useMemo(() => {
+    return getDocumentsForTab(activeTab);
+  }, [activeTab]);
+
+  // Group filtered documents by date (Today vs Last week)
+  const documentGroups = useMemo(() => {
+    const todayIds = new Set(documentsToday.map(doc => doc.id));
+    const lastWeekIds = new Set(documentsLastWeek.map(doc => doc.id));
+
+    const todayDocs = filteredDocuments.filter(doc => todayIds.has(doc.id));
+    const lastWeekDocs = filteredDocuments.filter(doc => lastWeekIds.has(doc.id));
+
+    const groups = [];
+    if (todayDocs.length > 0) {
+      groups.push({ title: 'Today', documents: todayDocs });
+    }
+    if (lastWeekDocs.length > 0) {
+      groups.push({ title: 'Last week', documents: lastWeekDocs });
+    }
+    return groups;
+  }, [filteredDocuments]);
+
+  // Calculate tab counts dynamically
+  const tabCounts = useMemo(() => {
+    return {
+      drafts: getDocumentsForTab('drafts').length,
+      'action-required': getDocumentsForTab('action-required').length,
+      'waiting-for-others': getDocumentsForTab('waiting-for-others').length,
+      finalized: getDocumentsForTab('finalized').length,
+    };
+  }, []);
+
+  const tabs = [
+    { id: 'drafts', label: 'Drafts', count: tabCounts.drafts, active: activeTab === 'drafts' },
+    { id: 'action-required', label: 'Action required', count: tabCounts['action-required'], active: activeTab === 'action-required' },
+    { id: 'waiting-for-others', label: 'Waiting for others', count: tabCounts['waiting-for-others'], active: activeTab === 'waiting-for-others' },
+    { id: 'finalized', label: 'Finalized', count: tabCounts.finalized, active: activeTab === 'finalized' },
   ];
 
   return (
@@ -49,7 +92,7 @@ function App() {
         className="flex-1 flex flex-col grow isolate items-start min-h-0 min-w-0 relative shrink-0 w-full max-w-full z-0 overflow-y-auto mt-[72px] overflow-x-hidden"
       >
         <div className="sticky top-0 z-20 bg-white w-full max-w-full">
-          <div className={`flex flex-col px-4 md:px-6 pb-0 transition-all duration-150 w-full max-w-full ${
+          <div className={`flex flex-col px-[60px] pb-0 transition-all duration-150 w-full max-w-full ${
             isScrolled 
               ? 'gap-3 md:gap-4 pt-3 md:pt-4' 
               : 'gap-6 md:gap-8 pt-6 md:pt-8'
@@ -63,7 +106,7 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-6 md:gap-8 px-4 md:px-6 pb-6 md:pb-8 pt-0 w-full max-w-full min-w-0">
+        <div className="flex flex-col gap-6 md:gap-8 px-[60px] pb-6 md:pb-8 pt-0 w-full max-w-full min-w-0">
           <DocumentTable groups={documentGroups} />
         </div>
       </div>
