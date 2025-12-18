@@ -1,3 +1,6 @@
+import { Heading } from '../ui/Typography';
+import { cn } from '../../utils/cn';
+
 interface WelcomeSectionProps {
   userName: string;
   className?: string;
@@ -5,9 +8,17 @@ interface WelcomeSectionProps {
 
 export default function WelcomeSection({ userName, className = '' }: WelcomeSectionProps) {
   return (
-    <div className={`flex-1 text-xl md:text-2xl font-bold leading-[24px] md:leading-[29px] text-text-dark ${className}`} style={{ fontFamily: "'Graphik LC Web', sans-serif" }}>
+    <Heading
+      level={1}
+      size="xl"
+      fontFamily="graphik"
+      fontWeight="bold"
+      color="dark"
+      lineHeight="24px"
+      className={cn('flex-1 md:text-2xl md:leading-[29px]', className)}
+    >
       Welcome back, {userName}
-    </div>
+    </Heading>
   );
 }
 

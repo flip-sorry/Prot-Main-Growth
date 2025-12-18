@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SignOutIcon } from '../ui/icons';
+import { SignOutIcon } from '../../assets/icons';
 import Avatar from '../ui/Avatar';
 
 interface UserMenuProps {

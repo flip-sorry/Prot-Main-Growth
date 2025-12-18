@@ -1,7 +1,7 @@
 import WorkspaceSelector from './WorkspaceSelector';
 import NavGroup from './NavGroup';
 import NavButton from './NavButton';
-import { HomeIcon, DocumentsIcon, TemplatesIcon, ContactsIcon, MoreIcon } from '../ui/icons';
+import { HomeIcon, DocumentsIcon, TemplatesIcon, ContactsIcon, MoreIcon } from '../../assets/icons';
 
 export default function Sidebar() {
 

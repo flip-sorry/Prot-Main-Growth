@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
-import Button from '../ui/Button';
+import { Button } from '../ui/Button';
 import Avatar from '../ui/Avatar';
 import UserMenu from './UserMenu';
-import { DocumentImageIcon, RecentDocumentsIcon, HelpQuestionIcon } from '../ui/icons';
+import { DocumentImageIcon, RecentDocumentsIcon, HelpQuestionIcon } from '../../assets/icons';
 
 // Helper function to get initials from a full name
 function getInitials(name: string): string {
@@ -29,13 +29,13 @@ export default function ActionButtons() {
   return (
     <>
       <div className="flex gap-2 items-center shrink-0">
-        <Button variant="icon" size="L">
+        <Button variant="icon" size="lg">
           <DocumentImageIcon />
         </Button>
-        <Button variant="icon" size="L">
+        <Button variant="icon" size="lg">
           <RecentDocumentsIcon />
         </Button>
-        <Button variant="icon" size="L">
+        <Button variant="icon" size="lg">
           <HelpQuestionIcon />
         </Button>
         <Avatar text={userInitials} onClick={handleAvatarClick} ref={avatarRef} />

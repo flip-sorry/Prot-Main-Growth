@@ -1,5 +1,8 @@
 import { forwardRef } from 'react';
 import type { DocumentStatus } from '../../types';
+import { Text } from './Typography';
+import { colors } from '../../tokens';
+import { cn } from '../../utils/cn';
 
 interface LabelStatusProps {
   type: DocumentStatus;
@@ -11,25 +14,25 @@ const LabelStatus = forwardRef<HTMLDivElement, LabelStatusProps>(
     const isToApprove = type === 'To approve';
     
     return (
-      <div ref={ref} className={`${className} inline-flex items-center`}>
+      <div ref={ref} className={cn('inline-flex items-center', className)}>
         <div
-          className={`h-4 inline-flex items-center justify-center px-1 rounded ${
-            isToApprove
-              ? 'bg-[rgba(255,144,69,0.08)]'
-              : 'bg-[#f4f4f4]'
-          }`}
+          className="h-4 inline-flex items-center justify-center px-1 rounded"
+          style={{
+            backgroundColor: isToApprove ? colors.status.orangeLight : '#f4f4f4',
+          }}
         >
-          <span
-            className={`text-[9px] font-semibold uppercase leading-none whitespace-nowrap ${
-              isToApprove
-                ? 'text-[#ff9045]'
-                : 'text-[#474747]'
-            }`}
-            style={{ fontFamily: "'Graphik LC Web', sans-serif" }}
+          <Text
+            variant="label"
+            size="9px"
+            fontFamily="graphik"
+            fontWeight="semibold"
+            color="light"
+            style={isToApprove ? { color: colors.status.orange } : undefined}
+            className="uppercase leading-none whitespace-nowrap"
             title={type}
           >
             {type}
-          </span>
+          </Text>
         </div>
       </div>
     );

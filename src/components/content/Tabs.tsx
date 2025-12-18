@@ -1,5 +1,7 @@
 import Tab from './Tab';
-import { ViewOptionsIcon, ChevronDownIcon } from '../ui/icons';
+import { ViewOptionsIcon, ChevronDownIcon } from '../../assets/icons';
+import { colors, transitions } from '../../tokens';
+import { cn } from '../../utils/cn';
 
 interface TabsProps {
   tabs: Array<{ id: string; label: string; count: number; active?: boolean }>;
@@ -22,7 +24,17 @@ export default function Tabs({ tabs, onTabClick, className = '' }: TabsProps) {
         ))}
       </div>
       <div className="flex h-[50px] md:h-[62px] items-center justify-end w-[120px] py-2 pl-2 pr-0 md:py-3 md:pl-3 md:pr-0 rounded-tr-lg shrink-0 flex-shrink-0 bg-white absolute right-0 top-0 z-10">
-        <button className="inline-flex items-center justify-center hover:bg-[rgba(118,118,118,0.08)] rounded transition-colors duration-150 p-1">
+        <button className={cn(
+          'inline-flex items-center justify-center rounded p-1',
+          transitions.default
+        )}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.backgroundColor = colors.interactive.hover;
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.backgroundColor = '';
+        }}
+        >
           <div className="flex items-start">
             <ViewOptionsIcon />
             <ChevronDownIcon />
