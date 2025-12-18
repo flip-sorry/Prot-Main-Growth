@@ -64,8 +64,8 @@ export default function Icon({ name, size, className = '', color }: IconProps) {
   }
 
   // For icons that support color prop (like PlusIcon), pass it through
-  if (name === 'plus' && color) {
-    return <IconComponent className={className} size={size} color={iconColorMap[color]} />;
+  if (name === 'plus' && color && color in iconColorMap) {
+    return <IconComponent className={className} size={size} color={iconColorMap[color as keyof typeof iconColorMap]} />;
   }
 
   return <IconComponent className={className} size={size} />;

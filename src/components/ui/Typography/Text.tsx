@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { typography, colors } from '../../../tokens';
 import { cn } from '../../../utils/cn';
 
-interface TextProps {
+interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;
   variant?: 'body' | 'label' | 'caption';
   size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '9px' | '13px';

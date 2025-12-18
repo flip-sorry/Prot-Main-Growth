@@ -1,8 +1,9 @@
 import { forwardRef } from 'react';
+import type { HTMLAttributes } from 'react';
 import { typography } from '../../../tokens';
 import { cn } from '../../../utils/cn';
 
-interface HeadingProps {
+interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
   level?: 1 | 2 | 3 | 4 | 5 | 6;
   size?: 'sm' | 'base' | 'lg' | 'xl' | '2xl';
@@ -28,7 +29,7 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     },
     ref
   ) => {
-    const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+    const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     
     // Map size to Tailwind classes (using explicit mapping for Tailwind JIT to detect)
     // Include all classes as literal strings so Tailwind JIT can detect them
@@ -72,15 +73,16 @@ const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       }
     };
 
+    const Component = Tag;
     return (
-      <Tag
+      <Component
         ref={setRefs}
         className={finalClassName}
         style={{ fontFamily: typography.fontFamily[fontFamily] }}
         {...props}
       >
         {children}
-      </Tag>
+      </Component>
     );
   }
 );

@@ -14,7 +14,7 @@ function getInitials(name: string): string {
 
 export default function ActionButtons() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const avatarRef = useRef<HTMLButtonElement>(null);
+  const avatarRef = useRef<HTMLButtonElement | null>(null);
   const userName = 'Iurii Aliavdin';
   const userInitials = getInitials(userName);
 

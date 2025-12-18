@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { Document } from '../../types';
 import LabelStatus from '../ui/LabelStatus';
 import Avatar from '../ui/Avatar';
@@ -8,6 +8,7 @@ import { useStatusWidth } from '../../contexts/StatusWidthContext';
 import { Text } from '../ui/Typography';
 import { colors, transitions } from '../../tokens';
 import { cn } from '../../utils/cn';
+import { debounce } from '../../utils/debounce';
 
 interface DocumentRowProps {
   document: Document;
@@ -19,29 +20,73 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
   const statusRef = useRef<HTMLDivElement>(null);
   const [isTitleTruncated, setIsTitleTruncated] = useState(false);
   const { maxStatusWidth, registerStatusRef } = useStatusWidth();
+  const rafIdRef = useRef<number | null>(null);
+  const lastTruncatedStateRef = useRef<boolean>(false);
+
+  // Use hysteresis to prevent rapid toggling (add 5px buffer)
+  const checkTruncation = useCallback(() => {
+    if (titleRef.current) {
+      const scrollWidth = titleRef.current.scrollWidth;
+      const clientWidth = titleRef.current.clientWidth;
+      const wasTruncated = lastTruncatedStateRef.current;
+      
+      // Hysteresis: use different thresholds for showing vs hiding
+      // Show when truncated: scrollWidth > clientWidth + 5px
+      // Hide when not truncated: scrollWidth <= clientWidth - 5px
+      let isTruncated: boolean;
+      if (wasTruncated) {
+        // Currently showing as truncated - only hide if there's enough space (buffer)
+        isTruncated = scrollWidth > clientWidth - 5;
+      } else {
+        // Currently not truncated - only show if clearly truncated (buffer)
+        isTruncated = scrollWidth > clientWidth + 5;
+      }
+      
+      // Only update state if there's a change
+      if (isTruncated !== wasTruncated) {
+        setIsTitleTruncated(isTruncated);
+        lastTruncatedStateRef.current = isTruncated;
+      }
+    }
+  }, []);
+
+  // Debounced version for resize events - memoized to prevent recreation
+  const debouncedCheckTruncation = useMemo(
+    () => debounce(() => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      rafIdRef.current = requestAnimationFrame(checkTruncation);
+    }, 150),
+    [checkTruncation]
+  );
 
   useEffect(() => {
-    const checkTruncation = () => {
-      if (titleRef.current) {
-        const isTruncated = titleRef.current.scrollWidth > titleRef.current.clientWidth;
-        setIsTitleTruncated(isTruncated);
-      }
-    };
-
-    checkTruncation();
-    window.addEventListener('resize', checkTruncation);
+    // Initial check
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+    rafIdRef.current = requestAnimationFrame(checkTruncation);
     
-    // Use ResizeObserver for more accurate detection
-    const resizeObserver = new ResizeObserver(checkTruncation);
+    window.addEventListener('resize', debouncedCheckTruncation);
+    
+    // Use ResizeObserver with debouncing for more accurate detection
+    const resizeObserver = new ResizeObserver(() => {
+      debouncedCheckTruncation();
+    });
+    
     if (titleRef.current) {
       resizeObserver.observe(titleRef.current);
     }
 
     return () => {
-      window.removeEventListener('resize', checkTruncation);
+      window.removeEventListener('resize', debouncedCheckTruncation);
       resizeObserver.disconnect();
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
-  }, [document.title]);
+  }, [document.title, checkTruncation, debouncedCheckTruncation]);
 
   useEffect(() => {
     // Register status ref for width measurement
@@ -62,7 +107,11 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
       transitions.default,
       className
     )}
-    style={{ borderBottomColor: colors.border.light }}
+    style={{ 
+      borderBottomColor: colors.border.light,
+      contain: 'layout style paint',
+      willChange: 'background-color'
+    }}
     onMouseEnter={(e) => {
       (e.currentTarget as HTMLElement).style.backgroundColor = colors.interactive.hover;
     }}
@@ -116,21 +165,31 @@ export default function DocumentRow({ document, className = '' }: DocumentRowPro
       </div>
       
       {/* Price column - max 120px, hidden on mobile and when title is truncated */}
-      {!isTitleTruncated && (
-        <div className="hidden md:flex max-w-[120px] shrink-0 items-center justify-end">
-          <Text
-            variant="body"
-            size="13px"
-            fontFamily="graphik"
-            fontWeight="normal"
-            color="dark"
-            lineHeight="normal"
-            className="text-right truncate"
-          >
-            {formatCurrency(document.amount)}
-          </Text>
-        </div>
-      )}
+      {/* Use CSS visibility instead of conditional rendering to prevent layout shifts */}
+      <div 
+        className={cn(
+          "hidden md:flex max-w-[120px] shrink-0 items-center justify-end transition-opacity duration-150",
+          isTitleTruncated ? "opacity-0 pointer-events-none overflow-hidden" : "opacity-100"
+        )}
+        style={{ 
+          visibility: isTitleTruncated ? 'hidden' : 'visible',
+          width: isTitleTruncated ? 0 : undefined,
+          minWidth: isTitleTruncated ? 0 : undefined,
+          willChange: 'opacity, width'
+        }}
+      >
+        <Text
+          variant="body"
+          size="13px"
+          fontFamily="graphik"
+          fontWeight="normal"
+          color="dark"
+          lineHeight="normal"
+          className="text-right truncate"
+        >
+          {formatCurrency(document.amount)}
+        </Text>
+      </div>
       
       {/* Avatar + Date column - max 140px, can shrink on smaller screens */}
       <div className="max-w-[140px] min-w-0 shrink flex gap-2 items-center">

@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState, useRef, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { debounce } from '../utils/debounce';
 
 interface StatusWidthContextType {
   maxStatusWidth: number;
@@ -16,44 +18,55 @@ export function StatusWidthProvider({ children }: { children: ReactNode }) {
   const [maxStatusWidth, setMaxStatusWidth] = useState(140);
   const statusRefs = useRef<Set<HTMLDivElement>>(new Set());
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const rafIdRef = useRef<number | null>(null);
 
   const measureAllStatuses = useCallback(() => {
-    let maxWidth = 140; // default min width
-    statusRefs.current.forEach((ref) => {
-      if (ref && ref.scrollWidth > 0) {
-        const width = ref.scrollWidth;
-        if (width > maxWidth) {
-          maxWidth = width;
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+    
+    rafIdRef.current = requestAnimationFrame(() => {
+      let maxWidth = 140; // default min width
+      statusRefs.current.forEach((ref) => {
+        if (ref && ref.scrollWidth > 0) {
+          const width = ref.scrollWidth;
+          if (width > maxWidth) {
+            maxWidth = width;
+          }
         }
-      }
+      });
+      setMaxStatusWidth(maxWidth);
     });
-    setMaxStatusWidth(maxWidth);
   }, []);
+
+  // Debounced version for resize events - memoized to prevent recreation
+  const debouncedMeasureAllStatuses = useMemo(
+    () => debounce(measureAllStatuses, 150),
+    [measureAllStatuses]
+  );
 
   const registerStatusRef = useCallback((ref: HTMLDivElement | null) => {
     if (ref) {
       statusRefs.current.add(ref);
       
-      // Set up ResizeObserver for this ref
+      // Set up ResizeObserver for this ref with debouncing
       if (!resizeObserverRef.current) {
         resizeObserverRef.current = new ResizeObserver(() => {
-          measureAllStatuses();
+          debouncedMeasureAllStatuses();
         });
       }
       resizeObserverRef.current.observe(ref);
       
-      // Measure immediately
+      // Measure immediately using RAF
       requestAnimationFrame(() => {
         measureAllStatuses();
       });
     }
-  }, [measureAllStatuses]);
+  }, [measureAllStatuses, debouncedMeasureAllStatuses]);
 
   useEffect(() => {
-    // Measure on mount and window resize
-    const handleResize = () => {
-      measureAllStatuses();
-    };
+    // Measure on mount and window resize with debouncing
+    const handleResize = debouncedMeasureAllStatuses;
     
     window.addEventListener('resize', handleResize);
     
@@ -68,8 +81,11 @@ export function StatusWidthProvider({ children }: { children: ReactNode }) {
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
       }
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
-  }, [measureAllStatuses]);
+  }, [measureAllStatuses, debouncedMeasureAllStatuses]);
 
   return (
     <StatusWidthContext.Provider value={{ maxStatusWidth, registerStatusRef }}>
