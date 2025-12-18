@@ -4,7 +4,7 @@ import { SparkleIcon } from '../../../assets/icons';
 import { cn } from '../../../utils/cn';
 
 interface AIFabProps {
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   isHidden?: boolean;
 }
@@ -23,7 +23,15 @@ const AIFab = forwardRef<HTMLButtonElement, AIFabProps>(
     return (
       <button
         ref={ref}
-        onClick={onClick}
+        onClick={(e) => {
+          // Stop propagation to prevent click-outside handler from firing
+          e.stopPropagation();
+          onClick?.(e);
+        }}
+        onMouseDown={(e) => {
+          // Stop propagation to prevent click-outside handler from firing
+          e.stopPropagation();
+        }}
         onKeyDown={handleKeyDown}
         className={cn(
         'fixed bottom-6 right-6',
@@ -49,6 +57,7 @@ const AIFab = forwardRef<HTMLButtonElement, AIFabProps>(
         border: `1px solid ${colors.border.light}`,
       }}
       aria-label="AI Assistant"
+      data-fab-button="true"
     >
         <SparkleIcon size={24} color={colors.text.dark} />
       </button>

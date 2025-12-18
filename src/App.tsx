@@ -19,6 +19,7 @@ function App() {
   const [fabPosition, setFabPosition] = useState<{ bottom: number; right: number } | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
+  const ignoreNextClickRef = useRef<boolean>(false); // Shared ref to ignore opening click
   
   // Get first name from full name in profile
   const fullUserName = 'Iurii Aliavdin';
@@ -154,8 +155,21 @@ function App() {
       <AIFab 
         ref={fabRef}
         isHidden={isChatPanelOpen && !isMinimized}
-        onClick={() => {
+        onClick={(e) => {
+          // Stop event propagation to prevent click-outside handler from firing
+          e.stopPropagation();
+          // #region agent log
+          fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:157',message:'FAB button clicked',data:{isChatPanelOpen,isMinimized,fabRefExists:!!fabRef.current},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'B'})}).catch(()=>{});
+          // #endregion
           if (!isChatPanelOpen && fabRef.current) {
+            // Set flag IMMEDIATELY before state update to prevent click-outside handler from closing
+            ignoreNextClickRef.current = true;
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:160',message:'Setting ignoreNextClick flag before opening panel',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:162',message:'Opening chat panel from FAB',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             // Open panel and capture FAB position (or restore from minimized)
             const rect = fabRef.current.getBoundingClientRect();
             setFabPosition({
@@ -165,6 +179,9 @@ function App() {
             setIsChatPanelOpen(true);
             setIsMinimized(false);
           } else if (isChatPanelOpen) {
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:168',message:'Closing chat panel from FAB',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             // Close panel
             setIsChatPanelOpen(false);
             setIsMinimized(false);
@@ -175,13 +192,22 @@ function App() {
         isOpen={isChatPanelOpen} 
         isMinimized={isMinimized}
         onClose={() => {
+          // #region agent log
+          fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:190',message:'onClose called',data:{isChatPanelOpen,isMinimized},timestamp:Date.now(),sessionId:'debug-session',runId:'run6',hypothesisId:'A'})}).catch(()=>{});
+          // #endregion
+          ignoreNextClickRef.current = false; // Clear flag when closing
           setIsChatPanelOpen(false);
           setIsMinimized(false);
         }}
         onMinimize={() => {
+          // #region agent log
+          fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:194',message:'onMinimize called',data:{isChatPanelOpen,isMinimized},timestamp:Date.now(),sessionId:'debug-session',runId:'run6',hypothesisId:'C'})}).catch(()=>{});
+          // #endregion
           setIsMinimized(true);
         }}
         fabPosition={fabPosition}
+        fabRef={fabRef}
+        ignoreNextClickRef={ignoreNextClickRef}
       />
     </MainLayout>
   );

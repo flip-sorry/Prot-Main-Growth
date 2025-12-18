@@ -14,6 +14,8 @@ export { default as HelpQuestionIcon } from './actions/HelpQuestionIcon';
 export { default as SignOutIcon } from './actions/SignOutIcon';
 export { default as PlusIcon } from './actions/PlusIcon';
 export { default as SparkleIcon } from './actions/SparkleIcon';
+export { default as SparkleOutlineIcon } from './actions/SparkleOutlineIcon';
+export { default as MascotIcon } from './actions/MascotIcon';
 export { default as MinimizeIcon } from './actions/MinimizeIcon';
 export { default as CloseIcon } from './actions/CloseIcon';
 export { default as AtIcon } from './actions/AtIcon';

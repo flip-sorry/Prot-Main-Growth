@@ -5,12 +5,18 @@ import { AtIcon, MicrophoneIcon, SendIcon } from '../../../assets/icons';
 
 interface ChatFooterProps {
   isOpen?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
-export default function ChatFooter({ isOpen = true }: ChatFooterProps) {
-  const [inputValue, setInputValue] = useState('');
+export default function ChatFooter({ isOpen = true, value: controlledValue, onChange }: ChatFooterProps) {
+  const [internalValue, setInternalValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Use controlled value if provided, otherwise use internal state
+  const inputValue = controlledValue !== undefined ? controlledValue : internalValue;
+  const setInputValue = onChange || setInternalValue;
 
   // Auto-focus input when panel opens (with delay to account for animation)
   useEffect(() => {
