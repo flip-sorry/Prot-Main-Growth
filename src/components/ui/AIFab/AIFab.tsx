@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { colors, shadows, transitions } from '../../../tokens';
-import { SparkleIcon } from '../../../assets/icons';
+import { MascotIcon } from '../../../assets/icons';
 import { cn } from '../../../utils/cn';
 
 interface AIFabProps {
@@ -59,7 +59,7 @@ const AIFab = forwardRef<HTMLButtonElement, AIFabProps>(
       aria-label="AI Assistant"
       data-fab-button="true"
     >
-        <SparkleIcon size={24} color={colors.text.dark} />
+        <MascotIcon size={36} />
       </button>
     );
   }
