@@ -4,6 +4,7 @@ import { cn } from '../../../utils/cn';
 import { CloseIcon } from '../../../assets/icons';
 import ChatFooter from './ChatFooter';
 import ChatContent from './ChatContent';
+import BookingInterface from './BookingInterface';
 import type { Message } from '../../../types/messages';
 import { generateAgentResponse, streamAgentResponse } from '../../../services/agentService';
 
@@ -29,6 +30,7 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
+  const [showBookingInterface, setShowBookingInterface] = useState(false);
   const panelOpenedAtRef = useRef<number | null>(null);
   const ignoreNextClickRef = useRef<boolean>(false); // Synchronous flag to ignore the opening click
   const timeoutRef = useRef<number | null>(null);
@@ -181,6 +183,13 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
     };
   }, [messages, isOpen, isMinimized]);
 
+  // Reset booking interface when panel closes
+  useEffect(() => {
+    if (!isOpen) {
+      setShowBookingInterface(false);
+    }
+  }, [isOpen]);
+
   // Handle minimize animation
   useEffect(() => {
     // #region agent log
@@ -317,56 +326,89 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
       }}
       data-name="chat-panel"
     >
-      {/* Header with minimize button */}
-      <div className={cn(
-        "flex items-center justify-end p-3 shrink-0",
-        isContentScrollable && "border-b border-[#e4e4e4]"
-      )}>
-        <button
-          onClick={(e) => {
-            // #region agent log
-            fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ChatPanel.tsx:117',message:'Minimize button onClick handler',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-            // #endregion
-            e.stopPropagation();
-            handleMinimize();
-          }}
+      {/* Sliding container for content transitions */}
+      <div className="relative flex-1 overflow-hidden min-h-0">
+        {/* Chat Content View */}
+        <div
           className={cn(
-            'w-8 h-8',
-            'flex items-center justify-center',
-            'rounded-[6px]',
-            'hover:bg-gray-100',
-            'transition-colors duration-150',
-            'focus:outline-none',
-            'focus:ring-2',
-            'focus:ring-offset-1',
-            'focus:ring-[#248567]'
+            "absolute inset-0 flex flex-col",
+            showBookingInterface ? "chat-slide-out-left" : "chat-slide-in"
           )}
-          aria-label="Minimize"
         >
-          <CloseIcon size={20} />
-        </button>
+          {/* Header with minimize button */}
+          <div className={cn(
+            "flex items-center justify-end p-3 shrink-0",
+            isContentScrollable && "border-b border-[#e4e4e4]"
+          )}>
+            <button
+              onClick={(e) => {
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ChatPanel.tsx:117',message:'Minimize button onClick handler',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                // #endregion
+                e.stopPropagation();
+                handleMinimize();
+              }}
+              className={cn(
+                'w-8 h-8',
+                'flex items-center justify-center',
+                'rounded-[6px]',
+                'hover:bg-gray-100',
+                'transition-colors duration-150',
+                'focus:outline-none',
+                'focus:ring-2',
+                'focus:ring-offset-1',
+                'focus:ring-[#248567]'
+              )}
+              aria-label="Minimize"
+            >
+              <CloseIcon size={20} />
+            </button>
+          </div>
+          {/* Scrollable content area */}
+          <div ref={scrollableContentRef} className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+            <ChatContent 
+              messages={messages}
+              source={source}
+              onPromptClick={(prompt) => {
+                handleSendMessage(prompt);
+                setInputValue('');
+              }}
+              onBookDemoClick={() => {
+                setShowBookingInterface(true);
+              }}
+            />
+          </div>
+          {/* Footer */}
+          <ChatFooter 
+            isOpen={isOpen && !isMinimized} 
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={(message) => {
+              handleSendMessage(message);
+              setInputValue('');
+            }}
+            source={source}
+          />
+        </div>
+
+        {/* Booking Interface View */}
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col",
+            showBookingInterface ? "chat-slide-in" : "chat-slide-out-right"
+          )}
+        >
+          <BookingInterface 
+            onClose={() => {
+              setShowBookingInterface(false);
+              onClose();
+            }}
+            onBack={() => {
+              setShowBookingInterface(false);
+            }}
+          />
+        </div>
       </div>
-      {/* Scrollable content area */}
-      <div ref={scrollableContentRef} className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
-        <ChatContent 
-          messages={messages}
-          source={source}
-          onPromptClick={(prompt) => {
-            handleSendMessage(prompt);
-            setInputValue('');
-          }} 
-        />
-      </div>
-      {/* Footer */}
-      <ChatFooter 
-        isOpen={isOpen && !isMinimized} 
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={(message) => {
-          handleSendMessage(message);
-          setInputValue('');
-        }}
-      />
       <style>{`
         .chat-panel-morph {
           bottom: var(--start-bottom);
@@ -408,6 +450,26 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
             opacity: 0;
             transform: scale(0.9);
           }
+        }
+
+        .chat-slide-in {
+          transform: translateX(0);
+          opacity: 1;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chat-slide-out-left {
+          transform: translateX(-100%);
+          opacity: 0;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          pointer-events: none;
+        }
+
+        .chat-slide-out-right {
+          transform: translateX(100%);
+          opacity: 0;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          pointer-events: none;
         }
       `}</style>
     </div>

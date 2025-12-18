@@ -8,9 +8,10 @@ interface ChatFooterProps {
   value?: string;
   onChange?: (value: string) => void;
   onSend?: (message: string) => void;
+  source?: 'fab' | 'header';
 }
 
-export default function ChatFooter({ isOpen = true, value: controlledValue, onChange, onSend }: ChatFooterProps) {
+export default function ChatFooter({ isOpen = true, value: controlledValue, onChange, onSend, source = 'fab' }: ChatFooterProps) {
   const [internalValue, setInternalValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -107,7 +108,7 @@ export default function ChatFooter({ isOpen = true, value: controlledValue, onCh
             onChange={(e) => setInputValue(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            placeholder="Ask me anything..."
+            placeholder={source === 'header' ? 'Describe your issue...' : 'Ask me anything...'}
             className={cn(
               'w-full',
               'resize-none',

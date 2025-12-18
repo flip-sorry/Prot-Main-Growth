@@ -9,9 +9,10 @@ interface ChatContentProps {
   messages?: Message[];
   source?: 'fab' | 'header';
   onPromptClick?: (prompt: string) => void;
+  onBookDemoClick?: () => void;
 }
 
-export default function ChatContent({ messages = [], source = 'fab', onPromptClick }: ChatContentProps) {
+export default function ChatContent({ messages = [], source = 'fab', onPromptClick, onBookDemoClick }: ChatContentProps) {
   const fabPrompts = [
     'What can you do for me?',
     'Arrange the invoices that have been completed.',
@@ -136,11 +137,19 @@ export default function ChatContent({ messages = [], source = 'fab', onPromptCli
           // Show chevron on hover for "Book a demo" when source is header
           const showChevronOnHover = source === 'header' && prompt === 'Book a demo';
           
+          const handleClick = () => {
+            if (prompt === 'Book a demo' && onBookDemoClick) {
+              onBookDemoClick();
+            } else {
+              onPromptClick?.(prompt);
+            }
+          };
+
           return (
             <PromptSuggestion
               key={index}
               prompt={prompt}
-              onClick={() => onPromptClick?.(prompt)}
+              onClick={handleClick}
               icon={icon}
               showChevronOnHover={showChevronOnHover}
             />

@@ -9,6 +9,7 @@ export { default as MoreIcon } from './navigation/MoreIcon';
 export { default as SearchIcon } from './actions/SearchIcon';
 export { default as MoreOptionsIcon } from './actions/MoreOptionsIcon';
 export { default as ChevronDownIcon } from './actions/ChevronDownIcon';
+export { default as ChevronLeftIcon } from './actions/ChevronLeftIcon';
 export { default as ChevronRightIcon } from './actions/ChevronRightIcon';
 export { default as ViewOptionsIcon } from './actions/ViewOptionsIcon';
 export { default as HelpQuestionIcon } from './actions/HelpQuestionIcon';
@@ -27,6 +28,8 @@ export { default as ThumbsUpIcon } from './actions/ThumbsUpIcon';
 export { default as ThumbsDownIcon } from './actions/ThumbsDownIcon';
 export { default as CopyIcon } from './actions/CopyIcon';
 export { default as CheckmarkIcon } from './actions/CheckmarkIcon';
+export { default as CalendarIcon } from './actions/CalendarIcon';
+export { default as ScheduleIcon } from './actions/ScheduleIcon';
 
 // Document icons
 export { default as DocumentPortraitIcon } from './documents/DocumentPortraitIcon';
