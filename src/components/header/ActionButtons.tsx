@@ -12,7 +12,11 @@ function getInitials(name: string): string {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-export default function ActionButtons() {
+interface ActionButtonsProps {
+  onOpenChatPanel: (source: 'fab' | 'header') => void;
+}
+
+export default function ActionButtons({ onOpenChatPanel }: ActionButtonsProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const avatarRef = useRef<HTMLButtonElement | null>(null);
   const userName = 'Iurii Aliavdin';
@@ -35,7 +39,7 @@ export default function ActionButtons() {
         <Button variant="icon" size="lg">
           <RecentDocumentsIcon />
         </Button>
-        <Button variant="icon" size="lg">
+        <Button variant="icon" size="lg" onClick={() => onOpenChatPanel('header')}>
           <HelpQuestionIcon />
         </Button>
         <Avatar text={userInitials} onClick={handleAvatarClick} ref={avatarRef} />

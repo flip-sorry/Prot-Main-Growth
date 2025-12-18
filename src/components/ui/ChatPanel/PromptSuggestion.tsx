@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import { colors, spacing, typography } from '../../../tokens';
 import { cn } from '../../../utils/cn';
-import { SparkleOutlineIcon } from '../../../assets/icons';
+import { SparkleOutlineIcon, ChevronRightIcon } from '../../../assets/icons';
+import type { ReactNode } from 'react';
 
 interface PromptSuggestionProps {
   prompt: string;
   onClick?: () => void;
+  icon?: ReactNode;
+  showChevronOnHover?: boolean;
 }
 
-export default function PromptSuggestion({ prompt, onClick }: PromptSuggestionProps) {
+export default function PromptSuggestion({ prompt, onClick, icon, showChevronOnHover = false }: PromptSuggestionProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <button
       type="button"
@@ -29,17 +35,21 @@ export default function PromptSuggestion({ prompt, onClick }: PromptSuggestionPr
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = colors.interactive.hover;
+        setIsHovered(true);
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = '';
+        setIsHovered(false);
       }}
     >
-      {/* Sparkle Outline Icon - XS size (16px) */}
-      <SparkleOutlineIcon 
-        size={16} 
-        color="#767676" 
-        className="shrink-0"
-      />
+      {/* Icon - XS size (16px) */}
+      {icon || (
+        <SparkleOutlineIcon 
+          size={16} 
+          color="#767676" 
+          className="shrink-0"
+        />
+      )}
       
       {/* Prompt Text */}
       <p
@@ -62,6 +72,15 @@ export default function PromptSuggestion({ prompt, onClick }: PromptSuggestionPr
       >
         {prompt}
       </p>
+
+      {/* Chevron Right Icon - shown on hover if showChevronOnHover is true */}
+      {showChevronOnHover && isHovered && (
+        <ChevronRightIcon 
+          size={16} 
+          color="#767676" 
+          className="shrink-0"
+        />
+      )}
     </button>
   );
 }

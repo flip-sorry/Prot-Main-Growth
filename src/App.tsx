@@ -16,6 +16,7 @@ function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [chatPanelSource, setChatPanelSource] = useState<'fab' | 'header'>('fab');
   const [fabPosition, setFabPosition] = useState<{ bottom: number; right: number } | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
@@ -24,6 +25,26 @@ function App() {
   // Get first name from full name in profile
   const fullUserName = 'Iurii Aliavdin';
   const firstName = fullUserName.split(' ')[0];
+
+  // Handler to open chat panel from different sources
+  const handleOpenChatPanel = (source: 'fab' | 'header') => {
+    setChatPanelSource(source);
+    if (source === 'fab' && fabRef.current) {
+      const rect = fabRef.current.getBoundingClientRect();
+      setFabPosition({
+        bottom: window.innerHeight - rect.top,
+        right: window.innerWidth - rect.right,
+      });
+    } else if (source === 'header') {
+      // Use default position for header (bottom-right corner)
+      setFabPosition({
+        bottom: 16,
+        right: 16,
+      });
+    }
+    setIsChatPanelOpen(true);
+    setIsMinimized(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,15 +71,7 @@ function App() {
           setIsChatPanelOpen(false);
           setIsMinimized(false);
         } else {
-          if (fabRef.current) {
-            const rect = fabRef.current.getBoundingClientRect();
-            setFabPosition({
-              bottom: window.innerHeight - rect.top,
-              right: window.innerWidth - rect.right,
-            });
-          }
-          setIsChatPanelOpen(true);
-          setIsMinimized(false);
+          handleOpenChatPanel('fab');
         }
       }
     };
@@ -125,7 +138,7 @@ function App() {
 
   return (
     <MainLayout>
-      <Header />
+      <Header onOpenChatPanel={handleOpenChatPanel} />
       <div 
         ref={scrollContainerRef}
         data-scroll-container
@@ -170,14 +183,7 @@ function App() {
             // #region agent log
             fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:162',message:'Opening chat panel from FAB',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            // Open panel and capture FAB position (or restore from minimized)
-            const rect = fabRef.current.getBoundingClientRect();
-            setFabPosition({
-              bottom: window.innerHeight - rect.top,
-              right: window.innerWidth - rect.right,
-            });
-            setIsChatPanelOpen(true);
-            setIsMinimized(false);
+            handleOpenChatPanel('fab');
           } else if (isChatPanelOpen) {
             // #region agent log
             fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:168',message:'Closing chat panel from FAB',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
@@ -196,6 +202,7 @@ function App() {
           fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.tsx:190',message:'onClose called',data:{isChatPanelOpen,isMinimized},timestamp:Date.now(),sessionId:'debug-session',runId:'run6',hypothesisId:'A'})}).catch(()=>{});
           // #endregion
           ignoreNextClickRef.current = false; // Clear flag when closing
+          setChatPanelSource('fab'); // Reset to default source
           setIsChatPanelOpen(false);
           setIsMinimized(false);
         }}
@@ -208,6 +215,7 @@ function App() {
         fabPosition={fabPosition}
         fabRef={fabRef}
         ignoreNextClickRef={ignoreNextClickRef}
+        source={chatPanelSource}
       />
     </MainLayout>
   );

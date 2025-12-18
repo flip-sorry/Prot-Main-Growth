@@ -15,9 +15,10 @@ interface ChatPanelProps {
   fabPosition: { bottom: number; right: number } | null;
   fabRef?: React.RefObject<HTMLButtonElement>;
   ignoreNextClickRef?: React.MutableRefObject<boolean>; // Shared ref from App to ignore opening click
+  source?: 'fab' | 'header';
 }
 
-export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fabPosition, fabRef, ignoreNextClickRef: appIgnoreNextClickRef }: ChatPanelProps) {
+export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fabPosition, fabRef, ignoreNextClickRef: appIgnoreNextClickRef, source = 'fab' }: ChatPanelProps) {
   // #region agent log
   fetch('http://127.0.0.1:7243/ingest/795e997c-f257-4cd3-b49a-079e5d61a81d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ChatPanel.tsx:16',message:'ChatPanel render',data:{isOpen,isMinimized,fabPosition},timestamp:Date.now(),sessionId:'debug-session',runId:'run11',hypothesisId:'E'})}).catch(()=>{});
   // #endregion
@@ -349,6 +350,7 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
       <div ref={scrollableContentRef} className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         <ChatContent 
           messages={messages}
+          source={source}
           onPromptClick={(prompt) => {
             handleSendMessage(prompt);
             setInputValue('');

@@ -1,22 +1,35 @@
 import { colors, spacing, typography } from '../../../tokens';
 import { cn } from '../../../utils/cn';
-import { MascotIcon } from '../../../assets/icons';
+import { MascotIcon, VideoPlayIcon, SparkleOutlineIcon } from '../../../assets/icons';
 import PromptSuggestion from './PromptSuggestion';
 import ChatMessages from './ChatMessages';
 import type { Message } from '../../../types/messages';
 
 interface ChatContentProps {
   messages?: Message[];
+  source?: 'fab' | 'header';
   onPromptClick?: (prompt: string) => void;
 }
 
-export default function ChatContent({ messages = [], onPromptClick }: ChatContentProps) {
-  const prompts = [
+export default function ChatContent({ messages = [], source = 'fab', onPromptClick }: ChatContentProps) {
+  const fabPrompts = [
     'What can you do for me?',
     'Arrange the invoices that have been completed.',
     'Organize completed invoices ',
     'Rename completed contracts',
   ];
+
+  const headerPrompts = [
+    'Book a demo',
+    'Something isn\'t working',
+    'Why hasn\'t my document been signed yet?',
+    'I have a billing question',
+  ];
+
+  const prompts = source === 'header' ? headerPrompts : fabPrompts;
+  
+  const greeting = source === 'header' ? 'How can I help you today?' : 'Hello there!';
+  const subtext = source === 'header' ? 'I\'ll help right away—and connect you with support if needed.' : 'How can I help you today?';
 
   // Show messages if any exist, otherwise show welcome state
   if (messages.length > 0) {
@@ -81,7 +94,7 @@ export default function ChatContent({ messages = [], onPromptClick }: ChatConten
               marginBottom: 0,
             }}
           >
-            Hello there!
+            {greeting}
           </p>
           <p
             style={{
@@ -93,7 +106,7 @@ export default function ChatContent({ messages = [], onPromptClick }: ChatConten
               margin: 0,
             }}
           >
-            How can I help you today?
+            {subtext}
           </p>
         </div>
       </div>
@@ -114,13 +127,25 @@ export default function ChatContent({ messages = [], onPromptClick }: ChatConten
           gap: spacing[1], // 4px
         }}
       >
-        {prompts.map((prompt, index) => (
-          <PromptSuggestion
-            key={index}
-            prompt={prompt}
-            onClick={() => onPromptClick?.(prompt)}
-          />
-        ))}
+        {prompts.map((prompt, index) => {
+          // Use VideoPlayIcon for "Book a demo" when source is header
+          const icon = source === 'header' && prompt === 'Book a demo' 
+            ? <VideoPlayIcon size={16} color="#767676" className="shrink-0" />
+            : undefined;
+          
+          // Show chevron on hover for "Book a demo" when source is header
+          const showChevronOnHover = source === 'header' && prompt === 'Book a demo';
+          
+          return (
+            <PromptSuggestion
+              key={index}
+              prompt={prompt}
+              onClick={() => onPromptClick?.(prompt)}
+              icon={icon}
+              showChevronOnHover={showChevronOnHover}
+            />
+          );
+        })}
       </div>
     </div>
   );
