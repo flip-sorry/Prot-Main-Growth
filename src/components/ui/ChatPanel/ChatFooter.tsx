@@ -7,9 +7,10 @@ interface ChatFooterProps {
   isOpen?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  onSend?: (message: string) => void;
 }
 
-export default function ChatFooter({ isOpen = true, value: controlledValue, onChange }: ChatFooterProps) {
+export default function ChatFooter({ isOpen = true, value: controlledValue, onChange, onSend }: ChatFooterProps) {
   const [internalValue, setInternalValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -130,6 +131,15 @@ export default function ChatFooter({ isOpen = true, value: controlledValue, onCh
               target.style.height = 'auto';
               target.style.height = `${Math.min(target.scrollHeight, 280)}px`;
             }}
+            onKeyDown={(e) => {
+              // Send message on Enter (but allow Shift+Enter for new line)
+              if (e.key === 'Enter' && !e.shiftKey && inputValue.trim()) {
+                e.preventDefault();
+                if (onSend) {
+                  onSend(inputValue.trim());
+                }
+              }
+            }}
           />
         </div>
 
@@ -213,7 +223,12 @@ export default function ChatFooter({ isOpen = true, value: controlledValue, onCh
                 backgroundColor: inputValue.trim() ? colors.primary.light : '',
               }}
               aria-label={inputValue.trim() ? 'Send' : 'Microphone'}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (inputValue.trim() && onSend) {
+                  onSend(inputValue.trim());
+                }
+              }}
               onMouseEnter={(e) => {
                 if (inputValue.trim()) {
                   // Slightly darker light green on hover

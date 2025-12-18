@@ -2,18 +2,27 @@ import { colors, spacing, typography } from '../../../tokens';
 import { cn } from '../../../utils/cn';
 import { MascotIcon } from '../../../assets/icons';
 import PromptSuggestion from './PromptSuggestion';
+import ChatMessages from './ChatMessages';
+import type { Message } from '../../../types/messages';
 
 interface ChatContentProps {
+  messages?: Message[];
   onPromptClick?: (prompt: string) => void;
 }
 
-export default function ChatContent({ onPromptClick }: ChatContentProps) {
+export default function ChatContent({ messages = [], onPromptClick }: ChatContentProps) {
   const prompts = [
     'What can you do for me?',
     'Arrange the invoices that have been completed.',
     'Organize completed invoices ',
     'Rename completed contracts',
   ];
+
+  // Show messages if any exist, otherwise show welcome state
+  if (messages.length > 0) {
+    return <ChatMessages messages={messages} />;
+  }
+
   return (
     <div
       className={cn(

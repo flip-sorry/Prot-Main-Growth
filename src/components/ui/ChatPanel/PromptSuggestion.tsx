@@ -25,6 +25,7 @@ export default function PromptSuggestion({ prompt, onClick }: PromptSuggestionPr
         paddingTop: spacing[2], // 8px
         paddingBottom: spacing[2], // 8px
         gap: spacing[2], // 8px
+        borderRadius: '8px',
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = colors.interactive.hover;

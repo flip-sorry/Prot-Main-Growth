@@ -35,3 +35,5 @@ export interface Workspace {
   iconColor: string;
 }
 
+export type { MessageType, Message } from './messages';
+

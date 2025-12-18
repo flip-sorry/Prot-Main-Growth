@@ -4,6 +4,8 @@ import { cn } from '../../../utils/cn';
 import { CloseIcon } from '../../../assets/icons';
 import ChatFooter from './ChatFooter';
 import ChatContent from './ChatContent';
+import type { Message } from '../../../types/messages';
+import { generateAgentResponse, streamAgentResponse } from '../../../services/agentService';
 
 interface ChatPanelProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
   const panelRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
   const panelOpenedAtRef = useRef<number | null>(null);
   const ignoreNextClickRef = useRef<boolean>(false); // Synchronous flag to ignore the opening click
   const timeoutRef = useRef<number | null>(null);
@@ -189,6 +192,61 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
     onMinimize();
   };
 
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim()) return;
+
+    // Create user message
+    const userMessage: Message = {
+      id: `user-${Date.now()}-${Math.random()}`,
+      type: 'user',
+      content: content.trim(),
+      timestamp: Date.now(),
+    };
+
+    // Add user message immediately
+    setMessages(prev => [...prev, userMessage]);
+
+    // Generate and stream agent response
+    try {
+      // Create "Thinking…" message immediately
+      const agentMessageId = `agent-${Date.now()}-${Math.random()}`;
+      const thinkingMessage: Message = {
+        id: agentMessageId,
+        type: 'agent',
+        content: 'Thinking…',
+        timestamp: Date.now(),
+        isStreaming: true,
+      };
+      
+      // Add "Thinking…" message immediately
+      setMessages(prev => [...prev, thinkingMessage]);
+      
+      // First get the full response
+      const agentResponseText = await generateAgentResponse(content.trim());
+      
+      // Stream the response, replacing "Thinking…" with actual content
+      let accumulatedContent = '';
+      await streamAgentResponse(agentResponseText, (chunk, isComplete) => {
+        accumulatedContent += chunk;
+        setMessages(prev => prev.map(msg => 
+          msg.id === agentMessageId 
+            ? { ...msg, content: accumulatedContent, isStreaming: !isComplete }
+            : msg
+        ));
+      });
+    } catch (error) {
+      console.error('Error generating agent response:', error);
+      // Add error message
+      const errorMessage: Message = {
+        id: `agent-error-${Date.now()}-${Math.random()}`,
+        type: 'agent',
+        content: "I'm sorry, I encountered an error. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
   return (
     <div
       ref={panelRef}
@@ -249,13 +307,23 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
       </div>
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
-        <ChatContent onPromptClick={(prompt) => setInputValue(prompt)} />
+        <ChatContent 
+          messages={messages}
+          onPromptClick={(prompt) => {
+            handleSendMessage(prompt);
+            setInputValue('');
+          }} 
+        />
       </div>
       {/* Footer */}
       <ChatFooter 
         isOpen={isOpen && !isMinimized} 
         value={inputValue}
         onChange={setInputValue}
+        onSend={(message) => {
+          handleSendMessage(message);
+          setInputValue('');
+        }}
       />
       <style>{`
         .chat-panel-morph {
