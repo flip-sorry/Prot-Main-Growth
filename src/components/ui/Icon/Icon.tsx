@@ -18,6 +18,8 @@ import {
   RecentDocumentsIcon,
   WorkspaceStarIcon,
   WorkspaceChevronIcon,
+  AtIcon,
+  MicrophoneIcon,
 } from '../../../assets/icons';
 
 interface IconProps {
@@ -53,6 +55,8 @@ const iconComponentMap = {
   'recent-documents': RecentDocumentsIcon,
   'workspace-star': WorkspaceStarIcon,
   'workspace-chevron': WorkspaceChevronIcon,
+  'at': AtIcon,
+  'microphone': MicrophoneIcon,
 };
 
 export default function Icon({ name, size, className = '', color }: IconProps) {

@@ -18,3 +18,4 @@ export default function MinimizeIcon({ className = '', size = 24, color = 'defau
   );
 }
 
+

@@ -235,3 +235,4 @@ Quick reference checklist for the refactoring process.
 - [ ] Icons load correctly
 - [ ] No unnecessary re-renders
 
+

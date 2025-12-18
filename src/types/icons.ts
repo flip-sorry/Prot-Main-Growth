@@ -15,5 +15,8 @@ export type IconName =
   | 'document-image'
   | 'recent-documents'
   | 'workspace-star'
-  | 'workspace-chevron';
+  | 'workspace-chevron'
+  | 'at'
+  | 'microphone'
+  | 'send';
 

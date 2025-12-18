@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { colors } from '../../../tokens';
 import { cn } from '../../../utils/cn';
 import { CloseIcon } from '../../../assets/icons';
+import ChatFooter from './ChatFooter';
 
 interface ChatPanelProps {
   isOpen: boolean;
@@ -136,6 +137,8 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
           Chat panel content
         </div>
       </div>
+      {/* Footer */}
+      <ChatFooter isOpen={isOpen && !isMinimized} />
       <style>{`
         .chat-panel-morph {
           bottom: var(--start-bottom);

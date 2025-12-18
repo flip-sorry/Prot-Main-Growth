@@ -39,6 +39,33 @@ function App() {
     }
   }, []);
 
+  // Handle Cmd+J / Ctrl+J to toggle chat panel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd+J on Mac, Ctrl+J on Windows/Linux
+      if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
+        e.preventDefault();
+        if (isChatPanelOpen) {
+          setIsChatPanelOpen(false);
+          setIsMinimized(false);
+        } else {
+          if (fabRef.current) {
+            const rect = fabRef.current.getBoundingClientRect();
+            setFabPosition({
+              bottom: window.innerHeight - rect.top,
+              right: window.innerWidth - rect.right,
+            });
+          }
+          setIsChatPanelOpen(true);
+          setIsMinimized(false);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isChatPanelOpen]);
+
   // Function to filter documents based on tab
   const getDocumentsForTab = (tabId: string): Document[] => {
     switch (tabId) {

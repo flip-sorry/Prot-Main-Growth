@@ -18,3 +18,4 @@ export default function CloseIcon({ className = '', size = 24, color = 'default'
   );
 }
 
+

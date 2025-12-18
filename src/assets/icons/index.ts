@@ -16,6 +16,9 @@ export { default as PlusIcon } from './actions/PlusIcon';
 export { default as SparkleIcon } from './actions/SparkleIcon';
 export { default as MinimizeIcon } from './actions/MinimizeIcon';
 export { default as CloseIcon } from './actions/CloseIcon';
+export { default as AtIcon } from './actions/AtIcon';
+export { default as MicrophoneIcon } from './actions/MicrophoneIcon';
+export { default as SendIcon } from './actions/SendIcon';
 
 // Document icons
 export { default as DocumentPortraitIcon } from './documents/DocumentPortraitIcon';
