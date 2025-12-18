@@ -8,11 +8,17 @@ import DocumentTable from './components/content/DocumentTable';
 import { documentsToday, documentsLastWeek, allDocuments } from './data/documents';
 import type { Document } from './types';
 import { StatusWidthProvider } from './contexts/StatusWidthContext';
+import AIFab from './components/ui/AIFab';
+import ChatPanel from './components/ui/ChatPanel';
 
 function App() {
   const [activeTab, setActiveTab] = useState('action-required');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [fabPosition, setFabPosition] = useState<{ bottom: number; right: number } | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
   
   // Get first name from full name in profile
   const fullUserName = 'Iurii Aliavdin';
@@ -94,6 +100,7 @@ function App() {
       <Header />
       <div 
         ref={scrollContainerRef}
+        data-scroll-container
         className="flex-1 flex flex-col grow isolate items-start min-h-0 min-w-0 relative shrink-0 w-full max-w-full z-0 overflow-y-auto mt-[72px] overflow-x-hidden"
       >
         <div className="sticky top-0 z-20 bg-white w-full max-w-full">
@@ -117,6 +124,38 @@ function App() {
           </StatusWidthProvider>
         </div>
       </div>
+      <AIFab 
+        ref={fabRef}
+        isHidden={isChatPanelOpen && !isMinimized}
+        onClick={() => {
+          if (!isChatPanelOpen && fabRef.current) {
+            // Open panel and capture FAB position (or restore from minimized)
+            const rect = fabRef.current.getBoundingClientRect();
+            setFabPosition({
+              bottom: window.innerHeight - rect.top,
+              right: window.innerWidth - rect.right,
+            });
+            setIsChatPanelOpen(true);
+            setIsMinimized(false);
+          } else if (isChatPanelOpen) {
+            // Close panel
+            setIsChatPanelOpen(false);
+            setIsMinimized(false);
+          }
+        }} 
+      />
+      <ChatPanel 
+        isOpen={isChatPanelOpen} 
+        isMinimized={isMinimized}
+        onClose={() => {
+          setIsChatPanelOpen(false);
+          setIsMinimized(false);
+        }}
+        onMinimize={() => {
+          setIsMinimized(true);
+        }}
+        fabPosition={fabPosition}
+      />
     </MainLayout>
   );
 }

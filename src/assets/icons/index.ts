@@ -13,6 +13,9 @@ export { default as ViewOptionsIcon } from './actions/ViewOptionsIcon';
 export { default as HelpQuestionIcon } from './actions/HelpQuestionIcon';
 export { default as SignOutIcon } from './actions/SignOutIcon';
 export { default as PlusIcon } from './actions/PlusIcon';
+export { default as SparkleIcon } from './actions/SparkleIcon';
+export { default as MinimizeIcon } from './actions/MinimizeIcon';
+export { default as CloseIcon } from './actions/CloseIcon';
 
 // Document icons
 export { default as DocumentPortraitIcon } from './documents/DocumentPortraitIcon';
