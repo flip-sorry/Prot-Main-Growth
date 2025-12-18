@@ -23,9 +23,11 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
   // #endregion
   console.log('[ChatPanel] Version run11 loaded - fix for opening click issue (1s delay + detailed logging)');
   const panelRef = useRef<HTMLDivElement>(null);
+  const scrollableContentRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isContentScrollable, setIsContentScrollable] = useState(false);
   const panelOpenedAtRef = useRef<number | null>(null);
   const ignoreNextClickRef = useRef<boolean>(false); // Synchronous flag to ignore the opening click
   const timeoutRef = useRef<number | null>(null);
@@ -142,6 +144,41 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
       ignoreNextClickRef.current = false;
     }
   }, [isOpen, isMinimized, onClose, fabRef]);
+
+  // Check if content is scrollable
+  useEffect(() => {
+    if (!isOpen || isMinimized) {
+      setIsContentScrollable(false);
+      return;
+    }
+
+    const checkScrollability = () => {
+      if (scrollableContentRef.current) {
+        const { scrollHeight, clientHeight } = scrollableContentRef.current;
+        setIsContentScrollable(scrollHeight > clientHeight);
+      }
+    };
+
+    // Check initially with a small delay to ensure DOM is ready
+    const initialTimeout = setTimeout(checkScrollability, 0);
+
+    // Use ResizeObserver to detect content size changes
+    let resizeObserver: ResizeObserver | null = null;
+    
+    if (scrollableContentRef.current) {
+      resizeObserver = new ResizeObserver(checkScrollability);
+      resizeObserver.observe(scrollableContentRef.current);
+    }
+
+    // Also check when messages change
+    const messageTimeout = setTimeout(checkScrollability, 100);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearTimeout(messageTimeout);
+      resizeObserver?.disconnect();
+    };
+  }, [messages, isOpen, isMinimized]);
 
   // Handle minimize animation
   useEffect(() => {
@@ -280,7 +317,10 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
       data-name="chat-panel"
     >
       {/* Header with minimize button */}
-      <div className="flex items-center justify-end p-3 border-b border-[#e4e4e4] shrink-0">
+      <div className={cn(
+        "flex items-center justify-end p-3 shrink-0",
+        isContentScrollable && "border-b border-[#e4e4e4]"
+      )}>
         <button
           onClick={(e) => {
             // #region agent log
@@ -306,7 +346,7 @@ export default function ChatPanel({ isOpen, isMinimized, onClose, onMinimize, fa
         </button>
       </div>
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+      <div ref={scrollableContentRef} className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         <ChatContent 
           messages={messages}
           onPromptClick={(prompt) => {

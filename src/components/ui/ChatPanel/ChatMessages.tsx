@@ -19,6 +19,16 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: hasStreaming ? 'auto' : 'smooth' });
   }, [messages]);
 
+  // Find the last agent message
+  const lastAgentMessageId = (() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].type === 'agent') {
+        return messages[i].id;
+      }
+    }
+    return null;
+  })();
+
   return (
     <div
       className={cn(
@@ -40,7 +50,11 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
         message.type === 'user' ? (
           <UserMessage key={message.id} message={message} />
         ) : (
-          <AgentMessage key={message.id} message={message} />
+          <AgentMessage 
+            key={message.id} 
+            message={message} 
+            isLastMessage={message.id === lastAgentMessageId}
+          />
         )
       ))}
       <div ref={messagesEndRef} />

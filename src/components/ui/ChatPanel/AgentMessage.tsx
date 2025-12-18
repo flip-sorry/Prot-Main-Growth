@@ -1,12 +1,14 @@
 import { colors, spacing, typography } from '../../../tokens';
 import { cn } from '../../../utils/cn';
 import type { Message } from '../../../types/messages';
+import FeedbackLoop from './FeedbackLoop';
 
 interface AgentMessageProps {
   message: Message;
+  isLastMessage?: boolean;
 }
 
-export default function AgentMessage({ message }: AgentMessageProps) {
+export default function AgentMessage({ message, isLastMessage = false }: AgentMessageProps) {
   const isThinking = message.content === 'Thinking…';
   
   return (
@@ -111,6 +113,10 @@ export default function AgentMessage({ message }: AgentMessageProps) {
           </p>
         )}
       </div>
+      {/* Feedback Loop - only show on last message and not when thinking */}
+      {isLastMessage && !isThinking && (
+        <FeedbackLoop messageContent={message.content} />
+      )}
       <style>{`
         @keyframes blink {
           0%, 50% { opacity: 1; }

@@ -21,6 +21,10 @@ export { default as CloseIcon } from './actions/CloseIcon';
 export { default as AtIcon } from './actions/AtIcon';
 export { default as MicrophoneIcon } from './actions/MicrophoneIcon';
 export { default as SendIcon } from './actions/SendIcon';
+export { default as ThumbsUpIcon } from './actions/ThumbsUpIcon';
+export { default as ThumbsDownIcon } from './actions/ThumbsDownIcon';
+export { default as CopyIcon } from './actions/CopyIcon';
+export { default as CheckmarkIcon } from './actions/CheckmarkIcon';
 
 // Document icons
 export { default as DocumentPortraitIcon } from './documents/DocumentPortraitIcon';
