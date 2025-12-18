@@ -25,9 +25,9 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
         'flex',
         'flex-col',
         'items-start',
-        'justify-end',
-        'h-full',
-        'w-full'
+        'w-full',
+        'min-h-full',
+        'justify-end'
       )}
       style={{
         paddingTop: spacing[2], // 8px
